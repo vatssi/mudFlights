@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:mock="http://www.mulesoft.org/schema/mule/mock" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/mock/current/mule-mock.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
+    <munit:config name="munit" doc:name="MUnit configuration"/>
+    <spring:beans>
+        <spring:import resource="classpath:apessential-mainflow.xml"/>
+    </spring:beans>
+    <munit:test name="apessential-mainflow-test-suite-getFlightFormFlowTest" description="Test" >
+        <flow-ref name="getFlightFormFlow" doc:name="getFlightFormFlow"/>
+    </munit:test>
+    <munit:test name="apessential-mainflow-test-suite-getFlightsFromFormFlowTest" description="Test">
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"destination" : "CLE",
+	"airline" : "american"
+}]]></dw:set-payload>
+            <dw:set-variable variableName="expectedVariable"><![CDATA[%dw 1.0
+%output application/json		
+---
+{
+	"destination" : "LAX",
+	"airline" : "United"
+}]]></dw:set-variable>
+        </dw:transform-message>
+        <logger level="INFO" doc:name="Logger"/>
+        <flow-ref name="getFlightsFromFormFlow" doc:name="Flow-ref to getFlightsFromFormFlow"/>
+    </munit:test>
+</mule>
